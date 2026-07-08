@@ -26,6 +26,14 @@ $stats['active_vehicles'] = $result->fetch_assoc()['count'];
 $result = $conn->query("SELECT COUNT(*) as count FROM machine_stops WHERE resumed_at IS NULL");
 $stats['stopped_machines'] = $result->fetch_assoc()['count'];
 
+// Completed today
+$result = $conn->query("SELECT COUNT(*) as count FROM vehicles WHERE status = 'completed' AND DATE(completed_at) = CURDATE()");
+$stats['completed_today'] = $result->fetch_assoc()['count'];
+
+// In progress count
+$result = $conn->query("SELECT COUNT(DISTINCT v.id) as count FROM vehicles v JOIN vehicle_machine_sequence vms ON v.id = vms.vehicle_id WHERE vms.status = 'in_progress'");
+$stats['in_progress'] = $result->fetch_assoc()['count'];
+
 // Recent vehicles
 $recent_vehicles = $conn->query("
     SELECT v.*, m.machine_name 
@@ -82,26 +90,62 @@ $recent_logs = $conn->query("
         <div class="row">
             <div class="col col-md-3">
                 <div class="stat-card">
-                    <div class="stat-label">Stanoklar</div>
+                    <div class="stat-icon">🔧</div>
                     <div class="stat-number"><?php echo $stats['machines']; ?></div>
+                    <div class="stat-label">Stanoklar</div>
                 </div>
             </div>
             <div class="col col-md-3">
                 <div class="stat-card success">
-                    <div class="stat-label">Operatorlar</div>
+                    <div class="stat-icon">👥</div>
                     <div class="stat-number"><?php echo $stats['operators']; ?></div>
+                    <div class="stat-label">Operatorlar</div>
                 </div>
             </div>
             <div class="col col-md-3">
                 <div class="stat-card warning">
-                    <div class="stat-label">Jami Tachkalar</div>
+                    <div class="stat-icon">🚗</div>
                     <div class="stat-number"><?php echo $stats['vehicles']; ?></div>
+                    <div class="stat-label">Jami Tachkalar</div>
                 </div>
             </div>
             <div class="col col-md-3">
-                <div class="stat-card <?php echo $stats['active_vehicles'] > 0 ? '' : 'danger'; ?>">
-                    <div class="stat-label">Aktiv Tachkalar</div>
+                <div class="stat-card info">
+                    <div class="stat-icon">⚡</div>
                     <div class="stat-number"><?php echo $stats['active_vehicles']; ?></div>
+                    <div class="stat-label">Aktiv Tachkalar</div>
+                </div>
+            </div>
+        </div>
+
+        <?php if ($stats['stopped_machines'] > 0): ?>
+        <div class="alert alert-warning" style="display: flex; align-items: center; gap: 12px; font-size: 1.1rem;">
+            <span style="font-size: 2rem;">⚠️</span>
+            <span><strong>Diqqat:</strong> <?php echo $stats['stopped_machines']; ?> ta stanok to'xtatilgan holatda!</span>
+        </div>
+        <?php endif; ?>
+
+        <!-- Additional Stats Row -->
+        <div class="row">
+            <div class="col col-md-4">
+                <div class="stat-card success">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-number"><?php echo $stats['completed_today']; ?></div>
+                    <div class="stat-label">Bugun Tugallandi</div>
+                </div>
+            </div>
+            <div class="col col-md-4">
+                <div class="stat-card info">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-number"><?php echo $stats['in_progress']; ?></div>
+                    <div class="stat-label">Jarayonda</div>
+                </div>
+            </div>
+            <div class="col col-md-4">
+                <div class="stat-card <?php echo $stats['stopped_machines'] > 0 ? 'danger' : ''; ?>">
+                    <div class="stat-icon">⏸️</div>
+                    <div class="stat-number"><?php echo $stats['stopped_machines']; ?></div>
+                    <div class="stat-label">To'xtatilgan</div>
                 </div>
             </div>
         </div>
