@@ -26,6 +26,40 @@ Merganbaz - bu stanoklar, operatorlar va tachkalarni boshqarish uchun mo'ljallan
 
 ## O'rnatish
 
+### ⚡ TEZKOR O'RNATISH (Tavsiya qilinadi)
+
+1. **Loyihani yuklab olish**:
+```bash
+cd C:/xampp/htdocs
+git clone https://github.com/Dilshod-prog/merganbaz.git
+```
+
+2. **XAMPP ni ishga tushiring**:
+   - Apache ✅ Start
+   - MySQL ✅ Start
+
+3. **Avtomatik o'rnatish**:
+```
+http://localhost/merganbaz/setup.php
+```
+
+Bu sahifa avtomatik:
+- ✅ Database yaratadi
+- ✅ Barcha jadvallarni yaratadi
+- ✅ Admin user qo'shadi (admin/admin123)
+- ✅ Test stanoklar qo'shadi
+
+4. **Login qiling**:
+```
+http://localhost/merganbaz
+Login: admin
+Parol: admin123
+```
+
+---
+
+### 📋 QADAMMA-QADAM O'RNATISH (Agar setup.php ishlamasa)
+
 ### 1. Loyihani yuklab olish
 
 ```bash

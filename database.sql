@@ -122,8 +122,9 @@ CREATE TABLE IF NOT EXISTS operator_permissions (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default super admin (password: admin123 - should be changed!)
-INSERT INTO users (username, password, full_name, phone, role) VALUES 
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Super Admin', '+998900000000', 'super_admin');
+-- Password: admin123 (verified working)
+INSERT INTO users (username, password, full_name, phone, role, is_active) VALUES 
+('admin', '$2y$12$rV.7uXSPo4E1ip7pl6Lpcec49aAZ6cpSjR3SJ74ihjT1aAyXUz5vy', 'Super Admin', '+998900000000', 'super_admin', 1);
 
 -- Sample data for testing
 INSERT INTO machines (machine_name, machine_code, description) VALUES 
