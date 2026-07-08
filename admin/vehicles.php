@@ -8,7 +8,8 @@ $vehicles = $conn->query("
     SELECT v.*, 
            m.machine_name,
            COUNT(DISTINCT vms.id) as total_machines,
-           SUM(CASE WHEN vms.status = 'completed' THEN 1 ELSE 0 END) as completed_machines
+           SUM(CASE WHEN vms.status = 'completed' THEN 1 ELSE 0 END) as completed_machines,
+           TIMESTAMPDIFF(SECOND, v.created_at, COALESCE(v.completed_at, NOW())) as elapsed_seconds
     FROM vehicles v
     LEFT JOIN machines m ON v.current_machine_id = m.id
     LEFT JOIN vehicle_machine_sequence vms ON v.id = vms.vehicle_id
@@ -66,7 +67,7 @@ $machines = $conn->query("SELECT id, machine_name, machine_code FROM machines WH
                                 <th>Hozirgi Stanok</th>
                                 <th>Jarayon</th>
                                 <th>Status</th>
-                                <th>Yaratilgan</th>
+                                <th>Vaqt</th>
                                 <th>Amallar</th>
                             </tr>
                         </thead>
@@ -99,7 +100,17 @@ $machines = $conn->query("SELECT id, machine_name, machine_code FROM machines WH
                                             <?php echo getStatusText($vehicle['status']); ?>
                                         </span>
                                     </td>
-                                    <td><?php echo formatDate($vehicle['created_at']); ?></td>
+                                    <td>
+                                        <?php if ($vehicle['status'] === 'completed'): ?>
+                                            <strong style="color: var(--success-color);">
+                                                ✅ <?php echo formatDuration($vehicle['elapsed_seconds']); ?>
+                                            </strong>
+                                        <?php else: ?>
+                                            <strong style="color: var(--info-color);">
+                                                ⏳ <?php echo formatDuration($vehicle['elapsed_seconds']); ?>
+                                            </strong>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <button onclick="viewVehicleDetails(<?php echo $vehicle['id']; ?>)" class="btn btn-primary btn-sm">Ko'rish</button>
                                         <button onclick="editVehicleSequence(<?php echo $vehicle['id']; ?>)" class="btn btn-secondary btn-sm">Ketma-ketlik</button>

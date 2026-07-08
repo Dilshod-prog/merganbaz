@@ -66,6 +66,67 @@ function formatDate($date) {
     return date('d.m.Y H:i', strtotime($date));
 }
 
+// Format date with seconds
+function formatDateWithSeconds($date) {
+    if (!$date) return '-';
+    return date('d.m.Y H:i:s', strtotime($date));
+}
+
+// Calculate time difference in human readable format
+function formatTimeDiff($start, $end) {
+    if (!$start) return '-';
+    
+    $end = $end ?: date('Y-m-d H:i:s');
+    
+    $start_time = strtotime($start);
+    $end_time = strtotime($end);
+    
+    $diff = $end_time - $start_time;
+    
+    if ($diff < 0) return '-';
+    
+    $days = floor($diff / 86400);
+    $hours = floor(($diff % 86400) / 3600);
+    $minutes = floor(($diff % 3600) / 60);
+    $seconds = $diff % 60;
+    
+    $result = [];
+    
+    if ($days > 0) {
+        $result[] = $days . ' kun';
+    }
+    if ($hours > 0) {
+        $result[] = $hours . ' soat';
+    }
+    if ($minutes > 0) {
+        $result[] = $minutes . ' daq';
+    }
+    if ($seconds > 0 || empty($result)) {
+        $result[] = $seconds . ' son';
+    }
+    
+    return implode(' ', $result);
+}
+
+// Format time only (for duration)
+function formatDuration($seconds) {
+    if ($seconds < 0) return '-';
+    
+    $days = floor($seconds / 86400);
+    $hours = floor(($seconds % 86400) / 3600);
+    $minutes = floor(($seconds % 3600) / 60);
+    $secs = $seconds % 60;
+    
+    $result = [];
+    
+    if ($days > 0) $result[] = $days . 'k';
+    if ($hours > 0) $result[] = $hours . 's';
+    if ($minutes > 0) $result[] = $minutes . 'd';
+    if ($secs > 0 || empty($result)) $result[] = $secs . 'son';
+    
+    return implode(' ', $result);
+}
+
 // Get machine name by ID
 function getMachineName($conn, $machine_id) {
     if (!$machine_id) return '-';

@@ -177,7 +177,7 @@ $recent_logs = $conn->query("
                                 <tbody>
                                     <?php if ($recent_vehicles->num_rows > 0): ?>
                                         <?php while ($vehicle = $recent_vehicles->fetch_assoc()): ?>
-                                        <tr>
+                                        <tr style="cursor: pointer;" onclick="viewVehicleDetails(<?php echo $vehicle['id']; ?>)" title="Batafsil ma'lumot">
                                             <td><strong><?php echo htmlspecialchars($vehicle['vehicle_number']); ?></strong></td>
                                             <td><?php echo htmlspecialchars($vehicle['machine_name'] ?? '-'); ?></td>
                                             <td>
@@ -185,7 +185,7 @@ $recent_logs = $conn->query("
                                                     <?php echo getStatusText($vehicle['status']); ?>
                                                 </span>
                                             </td>
-                                            <td><?php echo formatDate($vehicle['updated_at']); ?></td>
+                                            <td><?php echo formatDateWithSeconds($vehicle['updated_at']); ?></td>
                                         </tr>
                                         <?php endwhile; ?>
                                     <?php else: ?>
@@ -237,7 +237,7 @@ $recent_logs = $conn->query("
                                                 echo $actions[$log['action']] ?? $log['action'];
                                                 ?>
                                             </td>
-                                            <td><?php echo formatDate($log['created_at']); ?></td>
+                                            <td><?php echo formatDateWithSeconds($log['created_at']); ?></td>
                                         </tr>
                                         <?php endwhile; ?>
                                     <?php else: ?>
@@ -254,6 +254,53 @@ $recent_logs = $conn->query("
         </div>
     </div>
 
+    <!-- Vehicle Details Modal -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>🚗 Tachka Batafsil Ma'lumotlari</h3>
+                <span class="close" onclick="closeVehicleModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="vehicleModalContent">
+                <div class="spinner"></div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeVehicleModal()" class="btn btn-secondary">Yopish</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../js/main.js"></script>
+    <script>
+        function viewVehicleDetails(vehicleId) {
+            document.getElementById('vehicleModal').classList.add('show');
+            document.getElementById('vehicleModalContent').innerHTML = '<div class="spinner"></div>';
+            
+            fetch('../ajax/get_vehicle_details.php?vehicle_id=' + vehicleId)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        document.getElementById('vehicleModalContent').innerHTML = result.html;
+                    } else {
+                        document.getElementById('vehicleModalContent').innerHTML = 
+                            '<div class="alert alert-danger">' + result.message + '</div>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('vehicleModalContent').innerHTML = 
+                        '<div class="alert alert-danger">Xatolik yuz berdi</div>';
+                });
+        }
+        
+        function closeVehicleModal() {
+            document.getElementById('vehicleModal').classList.remove('show');
+        }
+        
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+    </script>
 </body>
 </html>
